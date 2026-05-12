@@ -424,6 +424,7 @@
   </div>
 
   <button class="btn btn-primary" id="btn-start">Start Game</button>
+  <button class="btn btn-ghost"   id="btn-change-avatars" style="display:none; margin-top:0.75rem;">Change avatars</button>
 </div>
 
 <!-- AVATAR SETUP — step 1: pasta + name -->
@@ -850,6 +851,15 @@ const QUESTIONS = {
   ]
 };
 
+// ── persistence ──
+function savePlayerData() {
+  localStorage.setItem('impasta_players', JSON.stringify(state.playerData));
+}
+function loadPlayerData() {
+  try { return JSON.parse(localStorage.getItem('impasta_players') || '[]'); }
+  catch { return []; }
+}
+
 // ── state ──
 const state = {
   players: 4,
@@ -960,11 +970,17 @@ function renderAccGrid(gridId, items, stateKey, previewFn) {
 // ── setup ──
 const playerCountEl = document.getElementById('player-count');
 
+function updateSetupButtons() {
+  const saved = loadPlayerData();
+  document.getElementById('btn-change-avatars').style.display =
+    saved.length === state.players ? 'block' : 'none';
+}
+
 document.getElementById('btn-minus').addEventListener('click', () => {
-  if (state.players > 3) { state.players--; playerCountEl.textContent = state.players; }
+  if (state.players > 3) { state.players--; playerCountEl.textContent = state.players; updateSetupButtons(); }
 });
 document.getElementById('btn-plus').addEventListener('click', () => {
-  if (state.players < 6) { state.players++; playerCountEl.textContent = state.players; }
+  if (state.players < 6) { state.players++; playerCountEl.textContent = state.players; updateSetupButtons(); }
 });
 
 document.querySelectorAll('.toggle button').forEach(btn => {
@@ -976,9 +992,25 @@ document.querySelectorAll('.toggle button').forEach(btn => {
 });
 
 document.getElementById('btn-start').addEventListener('click', () => {
+  state.question     = pickQuestion(state.category);
+  state.impastaIndex = Math.floor(Math.random() * state.players);
+  const saved = loadPlayerData();
+  if (saved.length === state.players) {
+    state.playerData    = saved;
+    state.currentPlayer = 0;
+    showCover();
+  } else {
+    state.playerData        = [];
+    state.avatarSetupPlayer = 0;
+    showAvatarSetup();
+  }
+});
+
+document.getElementById('btn-change-avatars').addEventListener('click', () => {
+  localStorage.removeItem('impasta_players');
+  state.playerData        = [];
   state.question          = pickQuestion(state.category);
   state.impastaIndex      = Math.floor(Math.random() * state.players);
-  state.playerData        = [];
   state.avatarSetupPlayer = 0;
   showAvatarSetup();
 });
@@ -1080,6 +1112,7 @@ document.getElementById('btn-hat-ready').addEventListener('click', () => {
   if (state.avatarSetupPlayer < state.players) {
     showAvatarSetup();
   } else {
+    savePlayerData();
     state.currentPlayer = 0;
     showCover();
   }
@@ -1121,16 +1154,22 @@ document.getElementById('btn-reveal-impasta').addEventListener('click', () => {
   show('screen-reveal');
 });
 
-document.getElementById('btn-new-game-d').addEventListener('click', () => show('screen-setup'));
+document.getElementById('btn-new-game-d').addEventListener('click', () => { updateSetupButtons(); show('screen-setup'); });
 
 // ── reveal ──
-document.getElementById('btn-play-again').addEventListener('click', () => show('screen-setup'));
+document.getElementById('btn-play-again').addEventListener('click', () => {
+  state.question     = pickQuestion(state.category);
+  state.impastaIndex = Math.floor(Math.random() * state.players);
+  state.currentPlayer = 0;
+  showCover();
+});
 
 // ── init ──
 renderPastaGrid();
 renderFaceGrid();
 renderAccGrid('eyewear-grid', EYEWEAR, 'selectedEyewear', updateEyewearPreview);
 renderAccGrid('hat-grid',     HATS,    'selectedHat',     updateHatPreview);
+updateSetupButtons();
 </script>
 </body>
 </html>
