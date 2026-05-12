@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Impasta</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:   #e8472a;
+      --cream: #fdf6ec;
+      --dark:  #140e07;
+      --mid:   #2e1f0f;
+      --gold:  #d4a24c;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--dark);
+      color: var(--cream);
+      min-height: 100dvh;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    /* ── screens ── */
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: 2.5rem 1.5rem calc(2.5rem + env(safe-area-inset-bottom));
+      text-align: center;
+      gap: 0;
+    }
+    .screen.active { display: flex; }
+
+    /* ── type ── */
+    h1  { font-size: clamp(2.8rem, 10vw, 4rem); font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
+    h2  { font-size: clamp(1.4rem, 5vw, 1.8rem); font-weight: 700; line-height: 1.2; }
+    p   { font-size: 1rem; opacity: 0.65; line-height: 1.55; }
+
+    .eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0.45;
+    }
+
+    /* ── buttons ── */
+    .btn {
+      display: block;
+      width: 100%;
+      max-width: 340px;
+      padding: 1.05rem 1.5rem;
+      border-radius: 1rem;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active { transform: scale(0.96); }
+
+    .btn-primary  { background: var(--red);  color: #fff; }
+    .btn-ghost    { background: transparent; color: var(--gold); border: 2px solid var(--gold); }
+
+    /* ── setup screen ── */
+    #screen-setup .logo    { font-size: 3.5rem; margin-bottom: 0.4rem; }
+    #screen-setup h1       { margin-bottom: 0.3rem; }
+    #screen-setup .tagline { font-size: 0.95rem; margin-bottom: 2.5rem; }
+
+    .field { width: 100%; max-width: 340px; margin-bottom: 1.4rem; text-align: left; }
+    .field > .eyebrow { margin-bottom: 0.55rem; }
+
+    .counter {
+      display: flex;
+      align-items: center;
+      background: var(--mid);
+      border-radius: 1rem;
+      overflow: hidden;
+    }
+    .counter button {
+      width: 3.5rem;
+      height: 3.5rem;
+      border: none;
+      background: transparent;
+      color: var(--cream);
+      font-size: 1.6rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .counter button:active { background: rgba(255,255,255,0.08); }
+    .counter span { flex: 1; text-align: center; font-size: 1.9rem; font-weight: 700; }
+
+    .toggle {
+      display: flex;
+      background: var(--mid);
+      border-radius: 1rem;
+      padding: 0.35rem;
+      gap: 0.35rem;
+    }
+    .toggle button {
+      flex: 1;
+      padding: 0.75rem 0.5rem;
+      border: none;
+      border-radius: 0.75rem;
+      background: transparent;
+      color: var(--cream);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      opacity: 0.45;
+      transition: background 0.2s, opacity 0.2s;
+    }
+    .toggle button.active { background: var(--red); opacity: 1; }
+
+    /* ── cover screen ── */
+    #screen-cover .big-num {
+      font-size: clamp(5rem, 22vw, 8rem);
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 0.1rem;
+    }
+    #screen-cover h2      { margin-bottom: 0.6rem; }
+    #screen-cover p       { max-width: 260px; margin-bottom: 2.5rem; }
+
+    /* ── question screen ── */
+    #screen-question .card {
+      background: var(--mid);
+      border-radius: 1.5rem;
+      padding: 1.75rem 1.5rem;
+      width: 100%;
+      max-width: 380px;
+      margin: 1.25rem 0 1rem;
+    }
+    #screen-question .question-text {
+      font-size: clamp(1.1rem, 4vw, 1.35rem);
+      line-height: 1.5;
+      font-weight: 500;
+    }
+    #screen-question p { max-width: 280px; margin-bottom: 2rem; }
+
+    /* ── discuss screen ── */
+    #screen-discuss .icon  { font-size: 3rem; margin-bottom: 1rem; }
+    #screen-discuss h2     { margin-bottom: 0.75rem; }
+    #screen-discuss p      { max-width: 300px; margin-bottom: 2.5rem; }
+    #screen-discuss .btn   { margin-bottom: 0.85rem; }
+
+    /* ── reveal screen ── */
+    #screen-reveal .badge {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      background: var(--red);
+      color: #fff;
+      padding: 0.4rem 1.1rem;
+      border-radius: 2rem;
+      margin-bottom: 1rem;
+    }
+    #screen-reveal h2       { font-size: clamp(2rem, 9vw, 3rem); margin-bottom: 0.2rem; }
+    #screen-reveal .sub     { margin-bottom: 1.25rem; }
+
+    .compare {
+      width: 100%;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      text-align: left;
+    }
+    .q-box {
+      background: var(--mid);
+      border-radius: 1rem;
+      padding: 1rem 1.2rem;
+    }
+    .q-box .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.45; margin-bottom: 0.4rem; }
+    .q-box .text  { font-size: 1rem; line-height: 1.45; }
+    .q-box.hi     { border: 2px solid var(--red); }
+  </style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div class="screen active" id="screen-setup">
+  <div class="logo">🍝</div>
+  <h1>Impasta</h1>
+  <p class="tagline">The party game of suspicious answers</p>
+
+  <div class="field">
+    <div class="eyebrow">Players</div>
+    <div class="counter">
+      <button id="btn-minus" aria-label="fewer players">−</button>
+      <span id="player-count">4</span>
+      <button id="btn-plus"  aria-label="more players">+</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="eyebrow">Category</div>
+    <div class="toggle">
+      <button class="active" data-cat="regular">Regular</button>
+      <button data-cat="kidFriendly">Kid Friendly</button>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" id="btn-start">Start Game</button>
+</div>
+
+<!-- COVER -->
+<div class="screen" id="screen-cover">
+  <div class="big-num" id="cover-num"></div>
+  <h2>Player <span id="cover-player-num"></span></h2>
+  <p>Keep the screen to yourself — don't let anyone else peek!</p>
+  <button class="btn btn-primary" id="btn-see-question">Tap to see your question</button>
+</div>
+
+<!-- QUESTION -->
+<div class="screen" id="screen-question">
+  <div class="eyebrow">Your question</div>
+  <div class="card">
+    <div class="question-text" id="question-text"></div>
+  </div>
+  <p>Remember your answer — don't reveal your question to anyone!</p>
+  <button class="btn btn-primary" id="btn-done">Done — pass the phone</button>
+</div>
+
+<!-- DISCUSS -->
+<div class="screen" id="screen-discuss">
+  <div class="icon">🕵️</div>
+  <h2>Everyone's got their question</h2>
+  <p>Take turns answering out loud. Someone got a slightly different question — can you figure out who?</p>
+  <button class="btn btn-primary" id="btn-reveal-impasta">Reveal the Impasta</button>
+  <button class="btn btn-ghost"   id="btn-new-game-d">New Game</button>
+</div>
+
+<!-- REVEAL -->
+<div class="screen" id="screen-reveal">
+  <div class="badge">The Impasta was…</div>
+  <h2>Player <span id="reveal-player-num"></span></h2>
+  <p class="sub">🍝 Busted!</p>
+
+  <div class="compare">
+    <div class="q-box">
+      <div class="label">Everyone else got</div>
+      <div class="text" id="reveal-normal"></div>
+    </div>
+    <div class="q-box hi">
+      <div class="label">The Impasta got</div>
+      <div class="text" id="reveal-impasta-q"></div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" id="btn-play-again">Play Again</button>
+</div>
+
+<script>
+const QUESTIONS = {
+  "regular": [
+    {"normal":"Which movie villain do you secretly think had a point?","impasta":"Which movie villain do you think was just deeply misunderstood?"},
+    {"normal":"Who in this room would survive the longest in a zombie apocalypse?","impasta":"Who in this room would be the first to accidentally get everyone caught?"},
+    {"normal":"What superpower would actually be the most useful in everyday life?","impasta":"What superpower sounds amazing but would actually be kind of annoying to have?"},
+    {"normal":"What's the best thing about being the oldest child in a family?","impasta":"What's the best thing about being the youngest child in a family?"},
+    {"normal":"Which historical figure do you think was genuinely impressive?","impasta":"Which historical figure do you think gets way too much credit?"},
+    {"normal":"Who in this room would make the best detective?","impasta":"Who in this room would make the best undercover spy?"},
+    {"normal":"What's the best song to blast when you need a burst of energy?","impasta":"What's the best song to play when you desperately need to calm down?"},
+    {"normal":"Which Disney princess would you most want as a best friend?","impasta":"Which Disney princess do you think is secretly the most interesting person?"},
+    {"normal":"What animal would be terrifying if it were the size of a golden retriever?","impasta":"What animal would be incredible as a pet if it were the size of a golden retriever?"},
+    {"normal":"What's the most impressive thing you actually know how to cook?","impasta":"What's the most impressive meal you've pretended to know how to cook?"},
+    {"normal":"What's a movie most people haven't seen that absolutely everyone should watch?","impasta":"What's a movie everyone seems to love that you just genuinely don't get?"},
+    {"normal":"Which Hogwarts house do you think you'd actually be sorted into?","impasta":"Which Hogwarts house do you secretly wish you'd be sorted into?"},
+    {"normal":"If you could master any skill in a single day, what would you choose?","impasta":"If you could be the undisputed world's best at any skill, what would you choose?"},
+    {"normal":"What food combination sounds completely disgusting but is actually amazing?","impasta":"What food combination sounds amazing on paper but always turns out to be a disappointment?"},
+    {"normal":"What's something completely useless that you're still oddly proud of knowing?","impasta":"What's a totally useless skill that you somehow have and can actually do?"},
+    {"normal":"What's the worst gift you've ever received?","impasta":"What's the worst gift you've ever given?"},
+    {"normal":"What's something totally normal that becomes deeply unsettling if you think about it too hard?","impasta":"What's something that seems completely bizarre until someone explains the logic behind it?"},
+    {"normal":"What's the best snack to eat while watching a movie?","impasta":"What's the best snack to eat right before going to sleep?"},
+    {"normal":"What's a hobby you'd love to be genuinely amazing at?","impasta":"What's a hobby you'd love to try at least once in your life?"},
+    {"normal":"What's the best thing to do on a long rainy day stuck inside?","impasta":"What's the best thing to do on a sweltering hot day when you can't sleep?"},
+    {"normal":"What's the best snack to have on a road trip?","impasta":"What's the best song to sing loudly on a road trip?"},
+    {"normal":"What's the most fun part of going to someone else's party?","impasta":"What's the most fun part of being the one who throws the party?"},
+    {"normal":"What would you do with £50 you found lying on the street?","impasta":"What would you do with £50 you found forgotten in an old jacket pocket?"},
+    {"normal":"What's the best thing to order at a pizza place?","impasta":"What's the best thing to order at a burger place?"},
+    {"normal":"What's a type of weather that you secretly love even when it's inconvenient?","impasta":"What's a type of weather that immediately puts you in a great mood?"},
+    {"normal":"What's the first thing you'd buy if you won the lottery?","impasta":"What's the first thing you'd do if you won the lottery?"},
+    {"normal":"What TV show could you rewatch from the start right now and not get bored?","impasta":"What TV show do you always recommend to people even though most haven't heard of it?"},
+    {"normal":"What's the best thing about a long bank holiday weekend?","impasta":"What's the best thing about the very last evening of a long holiday?"},
+    {"normal":"What's the best movie to put on when you're home sick and feeling terrible?","impasta":"What's the best book to read when you're home sick and feeling terrible?"},
+    {"normal":"What does the perfect breakfast look like?","impasta":"What does the perfect midnight snack look like?"},
+    {"normal":"What's the most fun part of going to a theme park?","impasta":"What's the most fun part of going to a water park?"},
+    {"normal":"If you had to eat one country's cuisine for every meal forever, which would you pick?","impasta":"If you had to eat one specific dish for every meal forever, which would you pick?"},
+    {"normal":"What's the ideal dessert to finish a really good meal?","impasta":"What's the ideal drink to finish a really good meal?"},
+    {"normal":"What's a food you used to hate as a kid but now actually love?","impasta":"What's a food you used to love as a kid but now find kind of disappointing?"},
+    {"normal":"What's something you're significantly better at than you look like you'd be?","impasta":"What's something you look very confident about but are secretly not that great at?"},
+    {"normal":"What's the strangest dream you can actually remember having?","impasta":"What's the strangest daydream you've caught yourself having recently?"},
+    {"normal":"If you could be any fictional character for one full week, who would you be?","impasta":"If you could meet any fictional character for a single afternoon, who would you choose?"},
+    {"normal":"What's the best possible way to spend your actual birthday?","impasta":"What's the best possible way to spend the evening before your birthday?"},
+    {"normal":"What's the most random fact you know that always impresses people?","impasta":"What's the most random fact you know that nobody has ever seemed to care about?"},
+    {"normal":"What's something you're surprisingly competitive about when you probably shouldn't be?","impasta":"What's something you act really competitive about but secretly don't care if you lose?"},
+    {"normal":"What would be the best theme for a birthday party?","impasta":"What would be the best theme for a Halloween costume?"},
+    {"normal":"If animals could suddenly talk, which species would be the funniest to have a conversation with?","impasta":"If animals could suddenly talk, which species would be the most annoyingly loud about their opinions?"},
+    {"normal":"What's the most underrated and impressive creature in the ocean?","impasta":"What's the most bizarre and deeply weird creature in the ocean?"},
+    {"normal":"What's a social rule you think absolutely everyone should follow?","impasta":"What's a social rule that technically exists but everyone clearly ignores?"},
+    {"normal":"What's the best thing about living in a big city?","impasta":"What's the best thing about living in a small, quiet town?"},
+    {"normal":"What fictional world would be genuinely fun to visit on holiday?","impasta":"What fictional world sounds amazing at first but would be genuinely awful to live in permanently?"},
+    {"normal":"What's something that reliably makes you laugh every single time, no matter how often you see it?","impasta":"What's something that makes you laugh even though you can never quite explain why it's funny?"},
+    {"normal":"What's the most satisfying thing in the world to watch being made from scratch?","impasta":"What's the most satisfying thing in the world to make yourself from scratch?"},
+    {"normal":"Who in this room would be most likely to accidentally start an international incident?","impasta":"Who in this room would be most likely to accidentally become famous?"},
+    {"normal":"What's the most magical thing about pasta?","impasta":"What's the most suspicious thing about pasta?"},
+    {"normal":"If pasta shapes had personalities, which shape do you think would be the most dramatic?","impasta":"If pasta shapes had personalities, which shape would you trust the least?"}
+  ],
+  "kidFriendly": [
+    {"normal":"Which video game world would you most want to spend a week exploring?","impasta":"Which video game world sounds incredible but would actually be incredibly boring to live in long-term?"},
+    {"normal":"Which Minecraft mob would be the most useful to have following you around?","impasta":"Which Minecraft mob is the most annoying to deal with, and why?"},
+    {"normal":"What magical spell from Harry Potter would be most useful during a school exam?","impasta":"What magical spell from Harry Potter would be most fun to use at a sleepover?"},
+    {"normal":"Which Pokémon would make the best companion on a long journey?","impasta":"Which Pokémon would make the most helpful study partner when you've got exams?"},
+    {"normal":"What class at Hogwarts do you think you'd actually be the best at?","impasta":"What class at Hogwarts sounds the most fun just from reading the description?"},
+    {"normal":"Which supervillain do you think has the most impressively creative power?","impasta":"Which supervillain do you think has the most embarrassingly ridiculous overall plan?"},
+    {"normal":"What's the best thing about the last week of the school year?","impasta":"What's the best thing about the very first week back at school?"},
+    {"normal":"Which animated movie has the absolute best soundtrack?","impasta":"Which animated movie has the best plot twist that you didn't see coming at all?"},
+    {"normal":"If you found out you had a secret identical twin, what would you do first?","impasta":"If you found out you had a secret identical twin, what's the first thing you'd make them do for you?"},
+    {"normal":"What mythological creature would make the most incredible pet?","impasta":"What mythological creature would be the most useful companion on a dangerous adventure?"},
+    {"normal":"Which Avenger would be the most fun to go on a school trip with?","impasta":"Which Avenger would be the most difficult to sit next to on a very long flight?"},
+    {"normal":"What real school subject would be completely transformed if it had a video game mechanic added?","impasta":"What video game would become completely different if it added a school subject mechanic?"},
+    {"normal":"What's the weirdest thing you could discover lurking in your school cafeteria?","impasta":"What's the weirdest thing you could discover hidden in the back of your school library?"},
+    {"normal":"If you could swap lives with any YouTuber for a whole week, who would you pick?","impasta":"If you could collaborate with any YouTuber on exactly one video, who would you pick?"},
+    {"normal":"What genre of video game is best to play when you're trying to slowly drift off to sleep?","impasta":"What genre of video game is best to play when you want to stay awake all night?"},
+    {"normal":"What would be the first thing you'd add to your school if you were principal for a day?","impasta":"What's one rule you'd immediately remove from school if you were principal for a day?"},
+    {"normal":"If dragons were real and could be trained, what would you teach yours to do?","impasta":"If dragons were real and completely wild, what would be the smartest way to approach one?"},
+    {"normal":"What's the best snack to have at a sleepover when you're already supposed to be asleep?","impasta":"What's the best game to play at a sleepover at 2am when everyone should be sleeping?"},
+    {"normal":"What's the very first thing you always do when starting a brand new Minecraft world?","impasta":"What's the first thing you add to a Minecraft base to make it feel like home?"},
+    {"normal":"What's the best thing to do when you've got an entire weekend completely free?","impasta":"What's the best thing to do on the very last night of the summer holidays?"},
+    {"normal":"What's the best thing to watch on YouTube when you're procrastinating something important?","impasta":"What's the best thing to listen to or watch while actually doing homework?"},
+    {"normal":"What's the strangest flavour of crisp that you'd absolutely still try?","impasta":"What's the strangest flavour of ice cream that you genuinely wish existed?"},
+    {"normal":"What's the best thing about being in the top year at school?","impasta":"What's the best thing about being in the middle year at school, not the oldest or youngest?"},
+    {"normal":"What would be the most legendary school field trip destination in history?","impasta":"What would be the most interesting theme for a school project you'd actually enjoy doing?"},
+    {"normal":"What animal would make the most useful sidekick in an adventure story?","impasta":"What animal would make the best mascot for a school sports team?"},
+    {"normal":"Which video game character would be genuinely terrifying if they existed in real life?","impasta":"Which video game character would be totally harmless and just kind of weird in real life?"},
+    {"normal":"If you could add one completely new class to your school timetable, what would it be?","impasta":"If you could swap out one existing school subject for something else entirely, what would you replace?"},
+    {"normal":"What movie sequel do you genuinely wish existed but doesn't?","impasta":"What movie do you think was made worse by getting a sequel?"},
+    {"normal":"What useful app doesn't exist yet but absolutely should?","impasta":"What useful invention doesn't exist yet but absolutely should?"},
+    {"normal":"What's the best strategy when it's too hot at night and you can't sleep?","impasta":"What's the best thing to eat or drink when it's boiling hot outside?"},
+    {"normal":"What real-life skill would give you an enormous advantage if you ended up in a video game world?","impasta":"What video game skill would give you the biggest advantage if it somehow worked in real life?"},
+    {"normal":"What Roblox game would work best as an actual real-life theme park?","impasta":"What real-life place or location would make the most fun Roblox game?"},
+    {"normal":"What one topping could you put on almost any food to instantly make it better?","impasta":"What one topping would immediately ruin almost any food if you added it?"},
+    {"normal":"What cartoon did you love when you were younger that you'd still happily watch now?","impasta":"What cartoon did you love when you were younger that you'd find slightly embarrassing to admit now?"},
+    {"normal":"What school subject are you way more capable at than most people expect?","impasta":"What school subject do you seem confident about but secretly find surprisingly hard?"},
+    {"normal":"If you could eat one fast food meal for every meal for a whole month, what would it be?","impasta":"If you could eat one home-cooked meal for every meal for a whole month, what would it be?"},
+    {"normal":"What existing video game would be incredible if developers added one specific new feature?","impasta":"What existing video game would be completely ruined if developers added one specific bad feature?"},
+    {"normal":"What fictional school from a book, movie, or show would you most want to actually attend?","impasta":"What fictional school from a book, movie, or show would you least want to be forced to attend?"},
+    {"normal":"What's genuinely the best part of a really long car journey?","impasta":"What's the best trick for surviving a really long and incredibly boring car journey?"},
+    {"normal":"If you could have a totally secret room in your house, what would you fill it with?","impasta":"If you could have a totally secret room somewhere in your school, what would you fill it with?"},
+    {"normal":"What popular app or website would you redesign to actually make it work better?","impasta":"What popular app or website would you rebuild completely from scratch if you had the chance?"},
+    {"normal":"In a battle royale of mythological creatures, who wins and why?","impasta":"In a mythological creature popularity contest, who wins the crowd and why?"},
+    {"normal":"What superpower would give you the biggest advantage during a regular school day?","impasta":"What superpower would cause the most absolute chaos if a student had it at school?"},
+    {"normal":"What horror movie did you pretend wasn't bothering you when it actually kind of was?","impasta":"What movie everyone said was terrifying that you actually found completely not scary at all?"},
+    {"normal":"What's the best kind of challenge to do with a group of friends in person?","impasta":"What's the best kind of challenge to watch people do on YouTube?"},
+    {"normal":"If you could rewrite the ending of any book, movie, or show, which one would you change?","impasta":"If you could add one more chapter or episode to any book, movie, or show, which would you pick?"},
+    {"normal":"What's the most impressive thing you think someone your age could genuinely accomplish?","impasta":"What's the most impressive thing you've heard of someone your age actually having done?"},
+    {"normal":"If you woke up tomorrow inside a video game world, what's the first thing you'd do?","impasta":"If you woke up tomorrow inside a fantasy novel world, what's the first thing you'd do?"},
+    {"normal":"What existing holiday should be extended by at least a week?","impasta":"What existing holiday do you think is already too long and could be shortened?"},
+    {"normal":"If pasta shapes were characters in a video game, which shape would be the final boss?","impasta":"If pasta shapes were characters in a video game, which shape would be the annoying tutorial guide?"},
+    {"normal":"If you had to eat pasta every day for a year, what sauce would you choose to keep it interesting?","impasta":"If you had to eat pasta every day for a year, what one ingredient would you absolutely ban from ever touching it?"}
+  ]
+};
+
+// ── state ──
+const state = {
+  players: 4,
+  category: 'regular',
+  currentPlayer: 0,
+  impastaIndex: 0,
+  question: null,
+  usedIndices: [],
+};
+
+// ── helpers ──
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function pickQuestion(category) {
+  const pool = QUESTIONS[category];
+  const available = pool
+    .map((_, i) => i)
+    .filter(i => !state.usedIndices.includes(i));
+  if (available.length === 0) {
+    state.usedIndices = [];
+    return pickQuestion(category);
+  }
+  const idx = available[Math.floor(Math.random() * available.length)];
+  state.usedIndices.push(idx);
+  return pool[idx];
+}
+
+// ── setup ──
+const playerCountEl = document.getElementById('player-count');
+
+document.getElementById('btn-minus').addEventListener('click', () => {
+  if (state.players > 3) { state.players--; playerCountEl.textContent = state.players; }
+});
+document.getElementById('btn-plus').addEventListener('click', () => {
+  if (state.players < 6) { state.players++; playerCountEl.textContent = state.players; }
+});
+
+document.querySelectorAll('.toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.toggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.category = btn.dataset.cat;
+  });
+});
+
+document.getElementById('btn-start').addEventListener('click', () => {
+  state.question     = pickQuestion(state.category);
+  state.impastaIndex = Math.floor(Math.random() * state.players);
+  state.currentPlayer = 0;
+  showCover();
+});
+
+// ── cover ──
+function showCover() {
+  const n = state.currentPlayer + 1;
+  document.getElementById('cover-num').textContent        = n;
+  document.getElementById('cover-player-num').textContent = n;
+  show('screen-cover');
+}
+
+document.getElementById('btn-see-question').addEventListener('click', () => {
+  const q = state.currentPlayer === state.impastaIndex
+    ? state.question.impasta
+    : state.question.normal;
+  document.getElementById('question-text').textContent = q;
+  show('screen-question');
+});
+
+// ── question ──
+document.getElementById('btn-done').addEventListener('click', () => {
+  state.currentPlayer++;
+  if (state.currentPlayer < state.players) {
+    showCover();
+  } else {
+    show('screen-discuss');
+  }
+});
+
+// ── discuss ──
+document.getElementById('btn-reveal-impasta').addEventListener('click', () => {
+  document.getElementById('reveal-player-num').textContent = state.impastaIndex + 1;
+  document.getElementById('reveal-normal').textContent     = state.question.normal;
+  document.getElementById('reveal-impasta-q').textContent  = state.question.impasta;
+  show('screen-reveal');
+});
+
+document.getElementById('btn-new-game-d').addEventListener('click', () => show('screen-setup'));
+
+// ── reveal ──
+document.getElementById('btn-play-again').addEventListener('click', () => show('screen-setup'));
+</script>
+</body>
+</html>
