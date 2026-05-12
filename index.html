@@ -66,6 +66,7 @@
       -webkit-tap-highlight-color: transparent;
     }
     .btn:active { transform: scale(0.96); }
+    .btn:disabled { opacity: 0.35; pointer-events: none; }
 
     .btn-primary  { background: var(--red);  color: #fff; }
     .btn-ghost    { background: transparent; color: var(--gold); border: 2px solid var(--gold); }
@@ -120,16 +121,219 @@
     }
     .toggle button.active { background: var(--red); opacity: 1; }
 
-    /* ── cover screen ── */
-    #screen-cover .big-num {
-      font-size: clamp(5rem, 22vw, 8rem);
-      font-weight: 900;
-      color: var(--gold);
-      line-height: 1;
-      margin-bottom: 0.1rem;
+    /* ── shared avatar customisation screens ── */
+    #screen-avatar-setup,
+    #screen-avatar-face,
+    #screen-avatar-eyewear,
+    #screen-avatar-hat {
+      overflow-y: auto;
+      height: 100dvh;
+      min-height: unset;
+      justify-content: flex-start;
+      padding-top: 2.5rem;
+      -webkit-overflow-scrolling: touch;
     }
-    #screen-cover h2      { margin-bottom: 0.6rem; }
-    #screen-cover p       { max-width: 260px; margin-bottom: 2.5rem; }
+    #screen-avatar-setup h2,
+    #screen-avatar-face h2,
+    #screen-avatar-eyewear h2,
+    #screen-avatar-hat h2 { margin-bottom: 0; }
+
+    /* pasta picker */
+    .pasta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.65rem;
+      width: 100%;
+      max-width: 340px;
+      margin-top: 1.1rem;
+    }
+
+    .pasta-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.8rem 0.4rem 0.65rem;
+      background: var(--mid);
+      border-radius: 1rem;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      color: var(--gold);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pasta-option:active { transform: scale(0.95); }
+    .pasta-option svg { width: 52px; height: 52px; display: block; }
+    .pasta-option .pasta-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      opacity: 0.6;
+      color: var(--cream);
+    }
+    .pasta-option.selected { border-color: var(--red); background: rgba(232,71,42,0.14); }
+    .pasta-option.selected .pasta-label { opacity: 1; }
+
+    .name-input {
+      display: block;
+      width: 100%;
+      background: var(--mid);
+      border: 2px solid transparent;
+      border-radius: 1rem;
+      padding: 1rem 1.2rem;
+      color: var(--cream);
+      font-size: 1.05rem;
+      font-weight: 500;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+      user-select: auto;
+    }
+    .name-input:focus { border-color: var(--gold); }
+    .name-input::placeholder { color: rgba(253,246,236,0.28); }
+
+    #screen-avatar-setup .field { margin-top: 1.25rem; margin-bottom: 0; }
+    #screen-avatar-setup .btn  { margin-top: 1.1rem; margin-bottom: calc(2rem + env(safe-area-inset-bottom)); }
+
+    /* face picker */
+    .face-preview {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      margin-top: 1.25rem;
+      margin-bottom: 0.25rem;
+      flex-shrink: 0;
+    }
+
+    .face-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.65rem;
+      width: 100%;
+      max-width: 340px;
+      margin-top: 1rem;
+    }
+
+    .face-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.8rem 0.4rem 0.65rem;
+      background: var(--mid);
+      border-radius: 1rem;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      color: var(--cream);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .face-option:active { transform: scale(0.95); }
+    .face-option svg { width: 52px; height: 52px; display: block; }
+    .face-option .face-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      opacity: 0.6;
+    }
+    .face-option.selected { border-color: var(--red); background: rgba(232,71,42,0.14); }
+    .face-option.selected .face-label { opacity: 1; }
+
+    #screen-avatar-face .btn { margin-top: 1.1rem; margin-bottom: calc(2rem + env(safe-area-inset-bottom)); }
+
+    /* accessory pickers (eyewear + hat share same classes) */
+    .acc-preview {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      margin-top: 1.25rem;
+      margin-bottom: 0.25rem;
+      flex-shrink: 0;
+    }
+
+    .acc-grid {
+      display: grid;
+      gap: 0.65rem;
+      width: 100%;
+      max-width: 340px;
+      margin-top: 1rem;
+    }
+    #eyewear-grid { grid-template-columns: repeat(2, 1fr); }
+    #hat-grid     { grid-template-columns: repeat(3, 1fr); }
+
+    .acc-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.8rem 0.4rem 0.65rem;
+      background: var(--mid);
+      border-radius: 1rem;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      color: var(--cream);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .acc-option:active { transform: scale(0.95); }
+    .acc-option svg { width: 52px; height: 52px; display: block; }
+    .acc-option .acc-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      opacity: 0.6;
+    }
+    .acc-option.selected { border-color: var(--red); background: rgba(232,71,42,0.14); }
+    .acc-option.selected .acc-label { opacity: 1; }
+
+    #screen-avatar-eyewear .btn,
+    #screen-avatar-hat .btn { margin-top: 1.1rem; margin-bottom: calc(2rem + env(safe-area-inset-bottom)); }
+
+    /* ── avatar composite display ── */
+    .avatar-display {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .avatar-pasta {
+      position: absolute;
+      inset: 0;
+      color: var(--gold);
+    }
+    .avatar-pasta svg { width: 100%; height: 100%; display: block; }
+    .avatar-face {
+      position: absolute;
+      inset: 0;
+      color: var(--dark);
+    }
+    .avatar-face svg { width: 100%; height: 100%; display: block; }
+    .avatar-eyewear {
+      position: absolute;
+      inset: 0;
+    }
+    .avatar-eyewear svg { width: 100%; height: 100%; display: block; }
+    .avatar-hat {
+      position: absolute;
+      inset: 0;
+    }
+    .avatar-hat svg { width: 100%; height: 100%; display: block; }
+
+    /* ── cover screen ── */
+    .cover-avatar {
+      width: 96px;
+      height: 96px;
+      margin-bottom: 0.5rem;
+      flex-shrink: 0;
+    }
+    .cover-name {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.35rem;
+    }
+    #screen-cover p { max-width: 260px; margin-bottom: 2.5rem; margin-top: 0.25rem; }
 
     /* ── question screen ── */
     #screen-question .card {
@@ -154,6 +358,13 @@
     #screen-discuss .btn   { margin-bottom: 0.85rem; }
 
     /* ── reveal screen ── */
+    .reveal-avatar {
+      width: 88px;
+      height: 88px;
+      margin-bottom: 0.65rem;
+      flex-shrink: 0;
+    }
+
     #screen-reveal .badge {
       font-size: 0.8rem;
       font-weight: 700;
@@ -215,10 +426,51 @@
   <button class="btn btn-primary" id="btn-start">Start Game</button>
 </div>
 
+<!-- AVATAR SETUP — step 1: pasta + name -->
+<div class="screen" id="screen-avatar-setup">
+  <div class="eyebrow" id="avatar-setup-eyebrow">Player 1</div>
+  <h2>Pick your pasta</h2>
+  <div class="pasta-grid" id="pasta-grid"></div>
+  <div class="field">
+    <div class="eyebrow">Your name</div>
+    <input type="text" id="avatar-name-input" class="name-input"
+           placeholder="Enter your name" maxlength="18"
+           autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"/>
+  </div>
+  <button class="btn btn-primary" id="btn-avatar-next" disabled>Next →</button>
+</div>
+
+<!-- AVATAR SETUP — step 2: face -->
+<div class="screen" id="screen-avatar-face">
+  <div class="eyebrow" id="face-setup-eyebrow">Player 1</div>
+  <h2>Pick a face</h2>
+  <div class="face-preview" id="face-preview"></div>
+  <div class="face-grid" id="face-grid"></div>
+  <button class="btn btn-primary" id="btn-face-next" disabled>Next →</button>
+</div>
+
+<!-- AVATAR SETUP — step 3: eyewear -->
+<div class="screen" id="screen-avatar-eyewear">
+  <div class="eyebrow" id="eyewear-setup-eyebrow">Player 1</div>
+  <h2>Add eyewear?</h2>
+  <div class="acc-preview" id="eyewear-preview"></div>
+  <div class="acc-grid" id="eyewear-grid"></div>
+  <button class="btn btn-primary" id="btn-eyewear-next">Next →</button>
+</div>
+
+<!-- AVATAR SETUP — step 4: hat -->
+<div class="screen" id="screen-avatar-hat">
+  <div class="eyebrow" id="hat-setup-eyebrow">Player 1</div>
+  <h2>Add a hat?</h2>
+  <div class="acc-preview" id="hat-preview"></div>
+  <div class="acc-grid" id="hat-grid"></div>
+  <button class="btn btn-primary" id="btn-hat-ready">Ready!</button>
+</div>
+
 <!-- COVER -->
 <div class="screen" id="screen-cover">
-  <div class="big-num" id="cover-num"></div>
-  <h2>Player <span id="cover-player-num"></span></h2>
+  <div class="cover-avatar" id="cover-avatar"></div>
+  <div class="cover-name" id="cover-name"></div>
   <p>Keep the screen to yourself — don't let anyone else peek!</p>
   <button class="btn btn-primary" id="btn-see-question">Tap to see your question</button>
 </div>
@@ -245,7 +497,8 @@
 <!-- REVEAL -->
 <div class="screen" id="screen-reveal">
   <div class="badge">The Impasta was…</div>
-  <h2>Player <span id="reveal-player-num"></span></h2>
+  <div class="reveal-avatar" id="reveal-avatar"></div>
+  <h2 id="reveal-player-name"></h2>
   <p class="sub">🍝 Busted!</p>
 
   <div class="compare">
@@ -263,6 +516,221 @@
 </div>
 
 <script>
+// ── pasta shapes ──
+const AVATARS = {
+  spaghetti: {
+    label: 'Spaghetti',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M5,24 C18,14 32,34 46,24 C60,14 70,20 75,17" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <path d="M5,34 C18,24 32,44 46,34 C60,24 70,30 75,27" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <path d="M5,44 C18,34 32,54 46,44 C60,34 70,40 75,37" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <path d="M5,54 C18,44 32,64 46,54 C60,44 70,50 75,47" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+</svg>`
+  },
+  penne: {
+    label: 'Penne',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <line x1="13" y1="29" x2="67" y2="29" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <line x1="13" y1="51" x2="67" y2="51" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <line x1="13" y1="29" x2="21" y2="51" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <line x1="59" y1="29" x2="67" y2="51" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <line x1="24" y1="29" x2="32" y2="51" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/>
+  <line x1="48" y1="29" x2="56" y2="51" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/>
+</svg>`
+  },
+  farfalle: {
+    label: 'Farfalle',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M6,14 L6,66 L35,52 L35,28 Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M74,14 L74,66 L45,52 L45,28 Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M35,28 C37,34 37,46 35,52 C37,48 43,48 45,52 C43,46 43,34 45,28 C43,32 37,32 35,28 Z" fill="currentColor" opacity="0.45" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+</svg>`
+  },
+  fusilli: {
+    label: 'Fusilli',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M40,7 C66,7 66,31 40,31 C14,31 14,51 40,51 C66,51 66,73 40,73" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M40,13 C60,13 60,31 40,31 C20,31 20,51 40,51 C60,51 60,67 40,67" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+</svg>`
+  },
+  ravioli: {
+    label: 'Ravioli',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="11" y="11" width="58" height="58" rx="7" stroke="currentColor" stroke-width="3"/>
+  <rect x="18" y="18" width="44" height="44" rx="3" stroke="currentColor" stroke-width="1.5" opacity="0.45"/>
+  <circle cx="18" cy="18" r="3" fill="currentColor"/>
+  <circle cx="62" cy="18" r="3" fill="currentColor"/>
+  <circle cx="18" cy="62" r="3" fill="currentColor"/>
+  <circle cx="62" cy="62" r="3" fill="currentColor"/>
+</svg>`
+  },
+  macaroni: {
+    label: 'Macaroni',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M19,9 L19,46 Q19,71 44,71 L72,71" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M27,9 L27,46 Q27,63 44,63 L72,63" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+  <line x1="19" y1="9" x2="27" y2="9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="72" y1="63" x2="72" y2="71" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+</svg>`
+  },
+  marcus: {
+    label: 'Marcus',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="26" y="70" width="10" height="9" rx="4.5" fill="currentColor"/>
+  <rect x="44" y="70" width="10" height="9" rx="4.5" fill="currentColor"/>
+  <ellipse cx="40" cy="66" rx="11" ry="8"  fill="currentColor"/>
+  <ellipse cx="40" cy="54" rx="13" ry="10" fill="currentColor"/>
+  <ellipse cx="40" cy="36" rx="17" ry="17" fill="currentColor"/>
+  <path d="M27,48 Q40,46 53,48" stroke="rgba(20,14,7,0.15)" stroke-width="1.5" fill="none"/>
+  <path d="M29,60 Q40,58 51,60" stroke="rgba(20,14,7,0.15)" stroke-width="1.5" fill="none"/>
+</svg>`
+  }
+};
+
+// ── faces ──
+const FACES = {
+  happy: {
+    label: 'Happy',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="31" cy="33" r="4" fill="currentColor"/>
+  <circle cx="49" cy="33" r="4" fill="currentColor"/>
+  <path d="M28,43 Q40,55 52,43" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+</svg>`
+  },
+  cheeky: {
+    label: 'Cheeky',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="30" cy="33" r="4" fill="currentColor"/>
+  <path d="M44,30 Q49,25 54,30" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <path d="M27,42 Q40,52 53,42" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="44" cy="52" rx="5.5" ry="4" fill="currentColor" opacity="0.6"/>
+</svg>`
+  },
+  sleepy: {
+    label: 'Sleepy',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M24,35 Q31,27 38,35" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <path d="M42,35 Q49,27 56,35" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <path d="M33,46 Q40,52 47,46" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+</svg>`
+  },
+  surprised: {
+    label: 'Surprised',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="30" cy="32" r="6.5" stroke="currentColor" stroke-width="2.5"/>
+  <circle cx="30" cy="32" r="2.5" fill="currentColor"/>
+  <circle cx="50" cy="32" r="6.5" stroke="currentColor" stroke-width="2.5"/>
+  <circle cx="50" cy="32" r="2.5" fill="currentColor"/>
+  <circle cx="40" cy="48" r="5.5" stroke="currentColor" stroke-width="2.5"/>
+</svg>`
+  },
+  cool: {
+    label: 'Cool',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M24,35 Q31,40 38,35" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <path d="M42,35 Q49,40 56,35" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <path d="M29,46 Q38,43 50,48" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+</svg>`
+  },
+  suspicious: {
+    label: 'Suspicious',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M24,36 Q31,29 38,36" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M24,36 Q31,40 38,36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/>
+  <circle cx="35" cy="34" r="2.5" fill="currentColor"/>
+  <path d="M42,36 Q49,29 56,36" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M42,36 Q49,40 56,36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/>
+  <circle cx="53" cy="34" r="2.5" fill="currentColor"/>
+  <line x1="33" y1="47" x2="47" y2="47" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+</svg>`
+  }
+};
+
+// ── hats ──
+const HATS = {
+  beanie: {
+    label: 'Beanie',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="40" cy="7" r="5.5" fill="#5c8fce"/>
+  <path d="M21,32 C21,16 29,6 40,6 C51,6 59,16 59,32 Z" fill="#5c8fce"/>
+  <rect x="19" y="27" width="42" height="9" rx="4" fill="#4878be"/>
+  <line x1="28" y1="27" x2="28" y2="36" stroke="#3868ae" stroke-width="1.5" opacity="0.6"/>
+  <line x1="37" y1="27" x2="37" y2="36" stroke="#3868ae" stroke-width="1.5" opacity="0.6"/>
+  <line x1="46" y1="27" x2="46" y2="36" stroke="#3868ae" stroke-width="1.5" opacity="0.6"/>
+  <line x1="55" y1="27" x2="55" y2="36" stroke="#3868ae" stroke-width="1.5" opacity="0.6"/>
+</svg>`
+  },
+  cap: {
+    label: 'Cap',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M20,33 C20,17 29,7 40,7 C51,7 60,17 60,33 Z" fill="#e8472a"/>
+  <path d="M18,33 L62,33 Q70,33 70,38 Q70,42 60,42 L18,37 Z" fill="#c23520"/>
+  <circle cx="40" cy="7" r="3" fill="#c23520"/>
+  <line x1="40" y1="7" x2="38" y2="33" stroke="#c23520" stroke-width="1.5" opacity="0.45"/>
+  <line x1="40" y1="7" x2="25" y2="31" stroke="#c23520" stroke-width="1.5" opacity="0.45"/>
+  <line x1="40" y1="7" x2="55" y2="31" stroke="#c23520" stroke-width="1.5" opacity="0.45"/>
+</svg>`
+  },
+  sombrero: {
+    label: 'Sombrero',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="40" cy="33" rx="36" ry="7" fill="#7a4e1e"/>
+  <path d="M27,33 C27,20 33,12 40,12 C47,12 53,20 53,33 Z" fill="#9a6228"/>
+  <ellipse cx="40" cy="33" rx="27" ry="4.5" fill="none" stroke="#5a3a12" stroke-width="1.5"/>
+  <path d="M29,30 Q40,28 51,30" stroke="#5a3a12" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>`
+  },
+  tophat: {
+    label: 'Top Hat',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="15" y="33" width="50" height="6" rx="3" fill="#1a0e05"/>
+  <rect x="25" y="8" width="30" height="27" rx="2" fill="#1a0e05"/>
+  <rect x="25" y="29" width="30" height="5" fill="#d4a24c"/>
+  <rect x="29" y="10" width="4" height="14" rx="2" fill="rgba(255,255,255,0.07)"/>
+</svg>`
+  }
+};
+
+// ── eyewear ──
+const EYEWEAR = {
+  sunglasses: {
+    label: 'Sunnies',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="13" y="27" width="23" height="15" rx="6" fill="#111111"/>
+  <rect x="44" y="27" width="23" height="15" rx="6" fill="#111111"/>
+  <line x1="36" y1="33" x2="44" y2="33" stroke="#111111" stroke-width="3" stroke-linecap="round"/>
+  <line x1="13" y1="33" x2="5"  y2="31" stroke="#111111" stroke-width="3" stroke-linecap="round"/>
+  <line x1="67" y1="33" x2="75" y2="31" stroke="#111111" stroke-width="3" stroke-linecap="round"/>
+</svg>`
+  },
+  starglass: {
+    label: 'Star ✦',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <polygon points="25,25 27,32 35,32 29,37 31,44 25,40 19,44 21,37 15,32 23,32" fill="#ff5faa"/>
+  <polygon points="55,25 57,32 65,32 59,37 61,44 55,40 49,44 51,37 45,32 53,32" fill="#ff5faa"/>
+  <line x1="35" y1="35" x2="45" y2="35" stroke="#ff5faa" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="15" y1="35" x2="7"  y2="33" stroke="#ff5faa" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="65" y1="35" x2="73" y2="33" stroke="#ff5faa" stroke-width="2.5" stroke-linecap="round"/>
+</svg>`
+  },
+  roundglass: {
+    label: 'Rounds',
+    svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="26" cy="35" r="11" stroke="#7a5010" stroke-width="2.5" fill="rgba(160,210,255,0.12)"/>
+  <circle cx="54" cy="35" r="11" stroke="#7a5010" stroke-width="2.5" fill="rgba(160,210,255,0.12)"/>
+  <line x1="37" y1="35" x2="43" y2="35" stroke="#7a5010" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="15" y1="35" x2="7"  y2="33" stroke="#7a5010" stroke-width="2"   stroke-linecap="round"/>
+  <line x1="65" y1="35" x2="73" y2="33" stroke="#7a5010" stroke-width="2"   stroke-linecap="round"/>
+</svg>`
+  }
+};
+
+// ── "none" placeholder SVG for pickers ──
+const NONE_SVG = `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="40" cy="40" r="18" stroke="currentColor" stroke-width="2" opacity="0.2"/>
+  <line x1="27" y1="53" x2="53" y2="27" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.2"/>
+</svg>`;
+
 const QUESTIONS = {
   "regular": [
     {"normal":"Which movie villain do you secretly think had a point?","impasta":"Which movie villain do you think was just deeply misunderstood?"},
@@ -380,6 +848,14 @@ const state = {
   impastaIndex: 0,
   question: null,
   usedIndices: [],
+  playerData: [],
+  avatarSetupPlayer: 0,
+  selectedAvatar: null,
+  selectedFace: null,
+  selectedEyewear: null,
+  selectedHat: null,
+  pendingName: '',
+  pendingAvatar: null,
 };
 
 // ── helpers ──
@@ -390,16 +866,85 @@ function show(id) {
 
 function pickQuestion(category) {
   const pool = QUESTIONS[category];
-  const available = pool
-    .map((_, i) => i)
-    .filter(i => !state.usedIndices.includes(i));
-  if (available.length === 0) {
-    state.usedIndices = [];
-    return pickQuestion(category);
-  }
+  const available = pool.map((_, i) => i).filter(i => !state.usedIndices.includes(i));
+  if (available.length === 0) { state.usedIndices = []; return pickQuestion(category); }
   const idx = available[Math.floor(Math.random() * available.length)];
   state.usedIndices.push(idx);
   return pool[idx];
+}
+
+function avatarHTML(pd) {
+  const face    = pd.face    ? `<div class="avatar-face">${FACES[pd.face].svg}</div>`         : '';
+  const eyewear = pd.eyewear ? `<div class="avatar-eyewear">${EYEWEAR[pd.eyewear].svg}</div>` : '';
+  const hat     = pd.hat     ? `<div class="avatar-hat">${HATS[pd.hat].svg}</div>`             : '';
+  return `<div class="avatar-display"><div class="avatar-pasta">${AVATARS[pd.avatar].svg}</div>${face}${eyewear}${hat}</div>`;
+}
+
+// ── build grids (once on load) ──
+function renderPastaGrid() {
+  const grid = document.getElementById('pasta-grid');
+  Object.entries(AVATARS).forEach(([key, data]) => {
+    const btn = document.createElement('button');
+    btn.className = 'pasta-option';
+    btn.dataset.avatar = key;
+    btn.innerHTML = data.svg + `<span class="pasta-label">${data.label}</span>`;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.pasta-option').forEach(el => el.classList.remove('selected'));
+      btn.classList.add('selected');
+      state.selectedAvatar = key;
+      updateNextBtn();
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function renderFaceGrid() {
+  const grid = document.getElementById('face-grid');
+  Object.entries(FACES).forEach(([key, data]) => {
+    const btn = document.createElement('button');
+    btn.className = 'face-option';
+    btn.dataset.face = key;
+    btn.innerHTML = data.svg + `<span class="face-label">${data.label}</span>`;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.face-option').forEach(el => el.classList.remove('selected'));
+      btn.classList.add('selected');
+      state.selectedFace = key;
+      updateFacePreview();
+      document.getElementById('btn-face-next').disabled = false;
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function renderAccGrid(gridId, items, stateKey, previewFn) {
+  const grid = document.getElementById(gridId);
+
+  // None option — pre-selected
+  const noneBtn = document.createElement('button');
+  noneBtn.className = 'acc-option selected';
+  noneBtn.dataset.value = '';
+  noneBtn.innerHTML = NONE_SVG + `<span class="acc-label">None</span>`;
+  noneBtn.addEventListener('click', () => {
+    grid.querySelectorAll('.acc-option').forEach(el => el.classList.remove('selected'));
+    noneBtn.classList.add('selected');
+    state[stateKey] = null;
+    previewFn();
+  });
+  grid.appendChild(noneBtn);
+
+  Object.entries(items).forEach(([key, data]) => {
+    const btn = document.createElement('button');
+    btn.className = 'acc-option';
+    btn.dataset.value = key;
+    btn.innerHTML = data.svg + `<span class="acc-label">${data.label}</span>`;
+    btn.addEventListener('click', () => {
+      grid.querySelectorAll('.acc-option').forEach(el => el.classList.remove('selected'));
+      btn.classList.add('selected');
+      state[stateKey] = key;
+      previewFn();
+    });
+    grid.appendChild(btn);
+  });
 }
 
 // ── setup ──
@@ -421,17 +966,120 @@ document.querySelectorAll('.toggle button').forEach(btn => {
 });
 
 document.getElementById('btn-start').addEventListener('click', () => {
-  state.question     = pickQuestion(state.category);
-  state.impastaIndex = Math.floor(Math.random() * state.players);
-  state.currentPlayer = 0;
-  showCover();
+  state.question          = pickQuestion(state.category);
+  state.impastaIndex      = Math.floor(Math.random() * state.players);
+  state.playerData        = [];
+  state.avatarSetupPlayer = 0;
+  showAvatarSetup();
+});
+
+// ── avatar setup: step 1 (pasta + name) ──
+function showAvatarSetup() {
+  const n = state.avatarSetupPlayer + 1;
+  document.getElementById('avatar-setup-eyebrow').textContent = `Player ${n}`;
+  state.selectedAvatar = null;
+  document.querySelectorAll('.pasta-option').forEach(el => el.classList.remove('selected'));
+  const nameInput = document.getElementById('avatar-name-input');
+  nameInput.value = '';
+  document.getElementById('btn-avatar-next').disabled = true;
+  show('screen-avatar-setup');
+  document.getElementById('screen-avatar-setup').scrollTop = 0;
+}
+
+function updateNextBtn() {
+  const name = document.getElementById('avatar-name-input').value.trim();
+  document.getElementById('btn-avatar-next').disabled = !(name.length > 0 && state.selectedAvatar);
+}
+
+document.getElementById('avatar-name-input').addEventListener('input', updateNextBtn);
+
+document.getElementById('btn-avatar-next').addEventListener('click', () => {
+  state.pendingName   = document.getElementById('avatar-name-input').value.trim();
+  state.pendingAvatar = state.selectedAvatar;
+  showFaceSetup();
+});
+
+// ── avatar setup: step 2 (face) ──
+function showFaceSetup() {
+  const n = state.avatarSetupPlayer + 1;
+  document.getElementById('face-setup-eyebrow').textContent = `Player ${n}`;
+  state.selectedFace = null;
+  document.querySelectorAll('.face-option').forEach(el => el.classList.remove('selected'));
+  document.getElementById('btn-face-next').disabled = true;
+  updateFacePreview();
+  show('screen-avatar-face');
+  document.getElementById('screen-avatar-face').scrollTop = 0;
+}
+
+function updateFacePreview() {
+  document.getElementById('face-preview').innerHTML =
+    avatarHTML({ avatar: state.pendingAvatar, face: state.selectedFace });
+}
+
+document.getElementById('btn-face-next').addEventListener('click', () => {
+  showEyewearSetup();
+});
+
+// ── avatar setup: step 3 (eyewear) ──
+function showEyewearSetup() {
+  const n = state.avatarSetupPlayer + 1;
+  document.getElementById('eyewear-setup-eyebrow').textContent = `Player ${n}`;
+  state.selectedEyewear = null;
+  document.querySelectorAll('#eyewear-grid .acc-option').forEach(el => el.classList.remove('selected'));
+  document.querySelector('#eyewear-grid .acc-option').classList.add('selected'); // re-select None
+  updateEyewearPreview();
+  show('screen-avatar-eyewear');
+  document.getElementById('screen-avatar-eyewear').scrollTop = 0;
+}
+
+function updateEyewearPreview() {
+  document.getElementById('eyewear-preview').innerHTML =
+    avatarHTML({ avatar: state.pendingAvatar, face: state.selectedFace, eyewear: state.selectedEyewear });
+}
+
+document.getElementById('btn-eyewear-next').addEventListener('click', () => {
+  showHatSetup();
+});
+
+// ── avatar setup: step 4 (hat) ──
+function showHatSetup() {
+  const n = state.avatarSetupPlayer + 1;
+  document.getElementById('hat-setup-eyebrow').textContent = `Player ${n}`;
+  state.selectedHat = null;
+  document.querySelectorAll('#hat-grid .acc-option').forEach(el => el.classList.remove('selected'));
+  document.querySelector('#hat-grid .acc-option').classList.add('selected'); // re-select None
+  updateHatPreview();
+  show('screen-avatar-hat');
+  document.getElementById('screen-avatar-hat').scrollTop = 0;
+}
+
+function updateHatPreview() {
+  document.getElementById('hat-preview').innerHTML =
+    avatarHTML({ avatar: state.pendingAvatar, face: state.selectedFace, eyewear: state.selectedEyewear, hat: state.selectedHat });
+}
+
+document.getElementById('btn-hat-ready').addEventListener('click', () => {
+  state.playerData.push({
+    name:    state.pendingName,
+    avatar:  state.pendingAvatar,
+    face:    state.selectedFace,
+    eyewear: state.selectedEyewear,
+    hat:     state.selectedHat,
+  });
+  state.avatarSetupPlayer++;
+  if (state.avatarSetupPlayer < state.players) {
+    showAvatarSetup();
+  } else {
+    state.currentPlayer = 0;
+    showCover();
+  }
 });
 
 // ── cover ──
 function showCover() {
-  const n = state.currentPlayer + 1;
-  document.getElementById('cover-num').textContent        = n;
-  document.getElementById('cover-player-num').textContent = n;
+  const pd = state.playerData[state.currentPlayer];
+  document.getElementById('cover-avatar').innerHTML = avatarHTML(pd);
+  document.getElementById('cover-name').textContent = pd.name;
   show('screen-cover');
 }
 
@@ -455,9 +1103,11 @@ document.getElementById('btn-done').addEventListener('click', () => {
 
 // ── discuss ──
 document.getElementById('btn-reveal-impasta').addEventListener('click', () => {
-  document.getElementById('reveal-player-num').textContent = state.impastaIndex + 1;
-  document.getElementById('reveal-normal').textContent     = state.question.normal;
-  document.getElementById('reveal-impasta-q').textContent  = state.question.impasta;
+  const pd = state.playerData[state.impastaIndex];
+  document.getElementById('reveal-avatar').innerHTML   = avatarHTML(pd);
+  document.getElementById('reveal-player-name').textContent = pd.name;
+  document.getElementById('reveal-normal').textContent      = state.question.normal;
+  document.getElementById('reveal-impasta-q').textContent   = state.question.impasta;
   show('screen-reveal');
 });
 
@@ -465,6 +1115,12 @@ document.getElementById('btn-new-game-d').addEventListener('click', () => show('
 
 // ── reveal ──
 document.getElementById('btn-play-again').addEventListener('click', () => show('screen-setup'));
+
+// ── init ──
+renderPastaGrid();
+renderFaceGrid();
+renderAccGrid('eyewear-grid', EYEWEAR, 'selectedEyewear', updateEyewearPreview);
+renderAccGrid('hat-grid',     HATS,    'selectedHat',     updateHatPreview);
 </script>
 </body>
 </html>
